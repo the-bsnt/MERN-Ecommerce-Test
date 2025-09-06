@@ -1,0 +1,34 @@
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const cors= require('cors');
+const mongoose = require('mongoose');
+const app = express();
+
+
+
+mongoose
+  .connect(
+    "mongodb+srv://aryalhari059:hari%402060@cluster0.edn2tbq.mongodb.net/?retryWrites=true&w=majority"
+  )
+
+  .then(() => console.log("MongoDB connected"))
+  .catch((error) => console.log(error));
+
+  const PORT = process.env.PORT || 5000;
+app.use(cors({
+    origin:'http://localhost:5000',
+    methods:['GET','POST','DELETE','PUT'],
+    allowedHeaders:[
+        "Content-Type",
+        'Authorization',
+        'Cache-Control',
+        'Expires',
+        'Pragma'
+    ],
+    credentials: true
+}));
+
+  app.use(cookieParser);
+  app.use(express.json());
+
+  app.listen(PORT,()=>console.log("Server Running"));
