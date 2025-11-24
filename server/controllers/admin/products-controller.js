@@ -22,7 +22,7 @@ const Product = require('../../models/Products');
 
    const addProduct= async(req,res)=>{
     try{
-      const {image,title,description,category,brand,price,salesPrice, totalStock }= req.body;
+      const {image,title,description,category,brand,price,salePrice, totalStock }= req.body;
       const newlyCreatedproduct = new Product({
         image,
         title,
@@ -30,7 +30,7 @@ const Product = require('../../models/Products');
         category,
         brand,
         price,
-        salesPrice,
+        salePrice,
         totalStock,
       });
       await newlyCreatedproduct.save();
@@ -51,7 +51,7 @@ const Product = require('../../models/Products');
    const fecthAllProducts= async(req,res)=>{
     try{
     const listOfProducts= await Product.find({});
-    res.ststus(200).json({
+    res.status(200).json({
       success:true,
       data:listOfProducts
     })
@@ -73,7 +73,7 @@ const Product = require('../../models/Products');
        category,
        brand,
        price,
-       salesPrice,
+       salePrice,
        totalStock,
      } = req.body;
 
@@ -89,7 +89,7 @@ const Product = require('../../models/Products');
      findProduct.category = category || findProduct.category;
      findProduct.brand = brand || findProduct.brand;
      findProduct.price= price||findProduct.price;
-     findProduct.salesPrice= salesPrice||findProduct.salesPrice;
+     findProduct.salePrice= salePrice||findProduct.salePrice;
      findProduct.totalStock= totalStock||findProduct.totalStock;
       findProduct.image = image || findProduct.image;
 
