@@ -7,7 +7,7 @@ import { Separator } from "../ui/separator";
     return (
       <div className="bg-background rounded-lg shadow-sm ">
         <div className="p-4 border-b">
-          <h2 className="font-extrabold text-2xl">Filters</h2>
+          <h2 className="font-bold text-2xl">Filters</h2>
         </div>
         <div className="p-y space-y-4 w-full">
           {Object.keys(filterOptions).map((keyItem) => (
