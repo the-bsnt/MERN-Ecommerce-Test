@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import UserCartItemsContent from "./cart-items-content";
@@ -15,6 +16,7 @@ function UserCartWrapper({cartItems}){
             0
           )
         : 0;
+        const navigate= useNavigate();
 return (
   <SheetContent className="sm:max-w-md">
     <SheetHeader className="flex items-center">
@@ -31,7 +33,7 @@ return (
         <span className="font-bold">{totalCartAmount}</span>
       </div>
     </div>
-    <Button className="w-full mt-6"> Checkout</Button>
+    <Button onClick={()=>navigate('/shop/checkout')} className="w-full mt-6"> Checkout</Button>
   </SheetContent>
 );
 }
