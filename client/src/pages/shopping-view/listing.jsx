@@ -48,7 +48,6 @@ function ShopListing () {
     setSort(value);
   }
  function handleFilter(getSectionId,getCurrentOption){
-  console.log(getCurrentOption,getSectionId);
   let cpyFilters={...filters};
   const indexOfCurrentSection= Object.keys(cpyFilters).indexOf(getSectionId);
 
@@ -70,7 +69,6 @@ function ShopListing () {
   console.log(cpyFilters, "filters");
  }
 function handleAddtoCart(getCurrentProductId){
-console.log(getCurrentProductId,'carted product')
 dispatch(addToCart({ userId:user?.id, productId:getCurrentProductId, quantity:1 })).then((data) =>{
 if (data?.payload?.success) {
   dispatch(fetchCartItems(user?.id));
@@ -78,6 +76,7 @@ if (data?.payload?.success) {
 }}
 );
 }
+
 useEffect(() => {
   const storedFilters = sessionStorage.getItem("filters");
   const parsedFilters = storedFilters ? JSON.parse(storedFilters) : {};
@@ -110,7 +109,7 @@ setFilters(JSON.parse(sessionStorage.getItem('filters'))||{})
  }, [dispatch, sort, filters]);
  
  function handleGetProductDetails(getCurrentProductId){
-console.log(getCurrentProductId);
+
 dispatch(fetchProductDetails(getCurrentProductId))
  }
 

@@ -8,9 +8,12 @@ import { Airplay, BabyIcon,
    Shirt, ShirtIcon, ShoppingBasket, UmbrellaIcon, WashingMachine, WatchIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllFilteredProducts } from '@/store/shop/products-slice';
+import { fetchAllFilteredProducts, fetchProductDetails } from '@/store/shop/products-slice';
 import { useNavigate } from 'react-router-dom';
 import ShoppingProductTile from '@/components/shopping-view/product-tile';
+import { toast } from 'sonner';
+import ProductDetailsDialog from '@/components/shopping-view/product-details';
+import { addToCart, fetchCartItems } from '@/store/shop/cart-slice';
 
 
 const categoriesWithIcon = [
@@ -32,7 +35,9 @@ const brandsWithIcon = [
  function ShoppingHome() {
 const slides=[bannerOne,bannerTwo,bannerThree];
 const[currentSlide,setCurrentSlide]= useState(0);
-const {productList}= useSelector(state=>state.shopProducts);
+const {productList,productDetails}= useSelector(state=>state.shopProducts);
+const {user}= useSelector(state=>state.auth)
+const [openDetailsDialog,setOpenDetailsDialog]= useState(false)
 const dispatch= useDispatch();
 const navigate= useNavigate();
 
@@ -46,6 +51,25 @@ navigate('/shop/listing')
 
 }
 
+
+ function handleGetProductDetails(getCurrentProductId){
+dispatch(fetchProductDetails(getCurrentProductId))
+ }
+
+ function handleAddtoCart(getCurrentProductId) {
+   dispatch(
+     addToCart({
+       userId: user?.id,
+       productId: getCurrentProductId,
+       quantity: 1,
+     })
+   ).then((data) => {
+     if (data?.payload?.success) {
+       dispatch(fetchCartItems(user?.id));
+       toast("Added to Cart");
+     }
+   });
+ }
   useEffect(()=>{
     dispatch(fetchAllFilteredProducts({
       filterParams:{},sortParams:'price-lowtohigh'
@@ -60,6 +84,9 @@ navigate('/shop/listing')
 
    return () => clearInterval(timer);
  }, []);
+ useEffect(()=>{
+if(productDetails!==null) setOpenDetailsDialog(true)
+ },[productDetails])
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -124,9 +151,7 @@ navigate('/shop/listing')
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {brandsWithIcon.map((brandItem) => (
               <Card
-                onClick={() =>
-                  handleNavigateToListingPage(brandItem, "brand")
-                }
+                onClick={() => handleNavigateToListingPage(brandItem, "brand")}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
               >
                 <CardContent className="flex flex-col items-center justify-center p-6">
@@ -146,12 +171,21 @@ navigate('/shop/listing')
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList && productList.length > 0
               ? productList.map((productItem) => (
-                  <ShoppingProductTile product={productItem} />
+                  <ShoppingProductTile
+                    product={productItem}
+                    handleGetProductDetails={handleGetProductDetails}
+                    handleAddtoCart={handleAddtoCart}
+                  />
                 ))
               : null}
           </div>
         </div>
       </section>
+      <ProductDetailsDialog
+        open={openDetailsDialog}
+        setOpen={setOpenDetailsDialog}
+        productDetails={productDetails}
+      />
     </div>
   );
 }
