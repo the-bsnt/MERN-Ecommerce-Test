@@ -6,7 +6,7 @@ const initialState= {
     productList:[],
     productDetails:null,
 }
-
+const url="https://ecommerce-im7c.onrender.com"
  export const fetchAllFilteredProducts= createAsyncThunk('/products/fetchAllFilteredProducts', 
     async({filterParams,sortParams})=>{
         const query = new URLSearchParams({
@@ -15,7 +15,7 @@ const initialState= {
         });
 
         const result = await axios.get(
-          `http://localhost:5000/api/shop/products/get?${query}`
+          url+`/api/shop/products/get?${query}`
         );
 
     return result?.data.data;
@@ -25,7 +25,7 @@ const initialState= {
    async (id) => {
 
      const result = await axios.get(
-       `http://localhost:5000/api/shop/products/get/${id}`
+       url+`/api/shop/products/get/${id}`
      );
 
      return result?.data;
