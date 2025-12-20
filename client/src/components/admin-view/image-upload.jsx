@@ -42,9 +42,10 @@ export default function ProductImageUpload({
   async function uploadImageToCloudinary() {
     setImageLoadingState(true);
     const data = new FormData();
+   const url="https://ecommerce-im7c.onrender.com"
     data.append("my_file", imageFile);
     const response = await axios.post(
-      "http://localhost:5000/api/admin/products/upload-image",
+      url+"/api/admin/products/upload-image",
       data
     );
     console.log(response,"response");
