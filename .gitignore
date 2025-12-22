@@ -175,3 +175,6 @@ cython_debug/
 
 /exports
 .vite/
+
+client/node_modules/
+server/node_modules/
