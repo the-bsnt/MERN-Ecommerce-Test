@@ -4,8 +4,8 @@ services:
       context: ./server
       dockerfile: ../docker/express/Dockerfile
     container_name: mern-ecommerce-backend
-    expose:
-      - 8000
+    ports:
+      - "8000:8000"
     volumes:
       - ./server:/server
       - /server/node_modules
