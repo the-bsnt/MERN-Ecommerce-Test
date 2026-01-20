@@ -31,7 +31,7 @@ jobs:
             cd /home/esten/MERN-Ecommerce-Test/client
             npm ci 
             npm run build
-            cp -r dist/* /usr/share/nginx/html/ 
+            cp -r dist/* /home/esten/build/ 
           EOF
         env:
           USER: ${{ secrets.USER }}

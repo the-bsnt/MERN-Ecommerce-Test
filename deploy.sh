@@ -14,7 +14,7 @@ npm run build
 
 
 # Copy new build to nginx html directory
-sudo cp -r dist/* /usr/share/nginx/html/
+sudo cp -r dist/* /home/esten/build/
 
 echo "Build completed and files copied to Nginx successfully."
 
