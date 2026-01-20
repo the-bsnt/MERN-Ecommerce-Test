@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: github runner user find out
+        run: whoami
+
       - name: setting ssh
         run: |
           mkdir -p ~/.ssh
