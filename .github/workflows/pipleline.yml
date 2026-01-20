@@ -1,0 +1,43 @@
+name: MERN-Ecommerce Pipline
+
+on:
+  push:
+    branches: ["main"] # The Event: trigger on every push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: setting ssh
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY"> ~/.ssh/private_key
+          chmod 600 ~/.ssh/private_key
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.HOST }}
+
+      - name: build
+        run: |
+          ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
+            cd /home/esten/MERN-Ecommerce-Test/
+            git pull origin main
+            cd /home/esten/MERN-Ecommerce-Test/client
+            npm ci 
+            npm run build
+            sudo cp -r dist/* /usr/share/nginx/html/ 
+          EOF
+
+      - name: deploy
+        run: |
+          ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
+            d /home/esten/MERN-Ecommerce-Test/
+            docker compose down 
+            docker compose -f docker-compose.prod.yml up --build -d
+          EOF
+        env:
+          USER: ${{ secrets.USER }}
+          HOST: ${{ secrets.HOST }}
