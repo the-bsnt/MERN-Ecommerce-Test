@@ -37,7 +37,7 @@ jobs:
       - name: deploy
         run: |
           ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
-            d /home/esten/MERN-Ecommerce-Test/
+            cd /home/esten/MERN-Ecommerce-Test
             docker compose down 
             docker compose -f docker-compose.prod.yml up --build -d
           EOF
