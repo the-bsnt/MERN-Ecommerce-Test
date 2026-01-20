@@ -30,6 +30,9 @@ jobs:
             npm run build
             sudo cp -r dist/* /usr/share/nginx/html/ 
           EOF
+        env:
+          USER: ${{ secrets.USER }}
+          HOST: ${{ secrets.HOST }}
 
       - name: deploy
         run: |
