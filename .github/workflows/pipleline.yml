@@ -38,9 +38,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
             cd /home/esten/MERN-Ecommerce-Test/
-            docker build . -f docker/express/Dockerfile --no-cache -t $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(TAG_NAME) && \
-            docker login -u ${username} -p ${password} ${DOCKER_REGISTRY} && \
-            docker push $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(TAG_NAME)
+            docker build . -f docker/express/Dockerfile --no-cache -t $DOCKER_REGISTRY/$IMAGE_NAME:$TAG_NAME && \
+            docker login -u $username -p $password $DOCKER_REGISTRY && \
+            docker push $DOCKER_REGISTRY/$IMAGE_NAME:$TAG_NAME
           EOF
         env:
           USER: ${{ secrets.USER }}
@@ -55,7 +55,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
             cd /home/esten/MERN-Ecommerce-Test
-            docker login -u ${username} -p ${password} ${DOCKER_REGISTRY}            
+            docker login -u $username -p $password $DOCKER_REGISTRY            
             docker compose down
             docker compose pull 
             docker compose -f docker-compose.prod.yml up -d
