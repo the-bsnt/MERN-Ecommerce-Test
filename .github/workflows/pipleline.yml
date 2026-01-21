@@ -9,9 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: github runner user find out
-        run: whoami
-
       - name: setting ssh
         run: |
           mkdir -p ~/.ssh
@@ -23,7 +20,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.HOST }}
 
-      - name: build
+      - name: build_react
         run: |
           ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
             cd /home/esten/MERN-Ecommerce-Test/
@@ -37,13 +34,35 @@ jobs:
           USER: ${{ secrets.USER }}
           HOST: ${{ secrets.HOST }}
 
-      - name: deploy
+      - name: build docker image and push to local registry
         run: |
           ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
-            cd /home/esten/MERN-Ecommerce-Test
-            docker compose down 
-            docker compose -f docker-compose.prod.yml up --build -d
+            cd /home/esten/MERN-Ecommerce-Test/
+            docker build . -f docker/express/Dockerfile --no-cache -t $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(TAG_NAME) && \
+            docker login -u ${username} -p ${password} ${DOCKER_REGISTRY} && \
+            docker push $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(TAG_NAME)
           EOF
         env:
           USER: ${{ secrets.USER }}
           HOST: ${{ secrets.HOST }}
+          DOCKER_REGISTRY: docker.io
+          IMAGE_NAME: mern-image
+          TAG_NAME: v1
+          username: ${{ secrets.DOCKER_USERNAME}}
+          password: ${{ secrets.DOCKER_PASSWD}}
+
+      - name: deployment
+        run: |
+          ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
+            cd /home/esten/MERN-Ecommerce-Test
+            docker login -u ${username} -p ${password} ${DOCKER_REGISTRY}            
+            docker compose down
+            docker compose pull 
+            docker compose -f docker-compose.prod.yml up -d
+          EOF
+        env:
+          USER: ${{ secrets.USER }}
+          HOST: ${{ secrets.HOST }}
+          DOCKER_REGISTRY: docker.io
+          username: ${{ secrets.DOCKER_USERNAME}}
+          password: ${{ secrets.DOCKER_PASSWD}}
