@@ -40,11 +40,11 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: DOCKER_REGISTRYDOCKER_USER,DOCKER_PSW,IMAGE_NAME,TAG_NAME
+          envs: DOCKER_REGISTRY,DOCKER_USER,DOCKER_PSW,IMAGE_NAME,TAG_NAME
           script: |
             cd /home/esten/MERN-Ecommerce-Test/
             docker build -f docker/express/Dockerfile --no-cache -t $DOCKER_USER/$IMAGE_NAME:$TAG_NAME .
-            docker login $DOCKER_REGISTRY -u $DOCKER_USER -p $DOCKER_PSW 
+            echo "$DOCKER_PSW" | docker login $DOCKER_REGISTRY -u $DOCKER_USER --password-stdin 
             docker push $DOCKER_USER/$IMAGE_NAME:$TAG_NAME
         env:
           DOCKER_REGISTRY: docker.io
