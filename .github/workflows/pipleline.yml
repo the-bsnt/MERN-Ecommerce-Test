@@ -5,7 +5,7 @@ on:
     branches: ["main"] # The Event: trigger on every push
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,6 +31,9 @@ jobs:
           IMAGE_NAME: mern-image
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME}}
 
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
       - name: ssh to server and deployment
         uses: appleboy/ssh-action@v1.0.0
         with:
