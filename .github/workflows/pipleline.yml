@@ -37,6 +37,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DOCKER_REGISTRY,DOCKER_USER,DOCKER_PSW,IMAGE_NAME
           script: |
             cd /home/esten/MERN-Ecommerce-Test/
             git pull origin main
