@@ -28,6 +28,7 @@ jobs:
             cd /home/esten/MERN-Ecommerce-Test/client
             npm ci 
             npm run build
+            rm -rf /home/esten/build/*
             cp -r dist/* /home/esten/build/ 
           EOF
         env:
