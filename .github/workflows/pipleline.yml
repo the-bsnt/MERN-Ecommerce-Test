@@ -33,6 +33,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: ssh to server and deployment
         uses: appleboy/ssh-action@v1.0.0
