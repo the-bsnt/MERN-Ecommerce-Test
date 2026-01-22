@@ -25,7 +25,6 @@ jobs:
         run: |
           docker build -f docker/express/Dockerfile --no-cache -t $DOCKER_USER/$IMAGE_NAME:$TAG_NAME ./server
           docker tag $DOCKER_USER/$IMAGE_NAME:$TAG_NAME $DOCKER_USER/$IMAGE_NAME:latest
-          echo "$DOCKER_PSW" | docker login $DOCKER_REGISTRY -u $DOCKER_USER --password-stdin
           docker push --all-tags $DOCKER_USER/$IMAGE_NAME
         env:
           DOCKER_REGISTRY: docker.io
