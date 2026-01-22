@@ -34,6 +34,9 @@ jobs:
           USER: ${{ secrets.USER }}
           HOST: ${{ secrets.HOST }}
 
+      - name: Set tag
+        run: echo "TAG_NAME=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Use SSH with TTY Emulation to build docker image and push to dockerhub
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -49,7 +52,6 @@ jobs:
         env:
           DOCKER_REGISTRY: docker.io
           IMAGE_NAME: mern-image
-          TAG_NAME: latest
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME}}
           DOCKER_PSW: ${{ secrets.DOCKER_PASSWD}}
 
@@ -64,9 +66,19 @@ jobs:
             cd /home/esten/MERN-Ecommerce-Test
             docker login $DOCKER_REGISTRY -u $DOCKER_USER -p $DOCKER_PSW             
             docker compose down
-            docker compose -f docker-compose.prod.yml pull 
-            docker compose -f docker-compose.prod.yml up -d
+            # docker compose -f docker-compose.prod.yml pull
+            docker pull $DOCKER_USER/$IMAGE_NAME:$TAG_NAME
+            docker run -d \
+            --name mern-ecommerce-backend \
+            -p 127.0.0.1:8000:8000 \
+            --env-file ./server/.env \
+            -e NODE_ENV=production \
+            -e PORT=8000 \
+            -v ./server:/server \
+            -v /server/node_modules \
+            $DOCKER_USER/$IMAGE_NAME:$TAG_NAME
         env:
           DOCKER_REGISTRY: docker.io
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME}}
           DOCKER_PSW: ${{ secrets.DOCKER_PASSWD}}
+          IMAGE_NAME: mern-image
