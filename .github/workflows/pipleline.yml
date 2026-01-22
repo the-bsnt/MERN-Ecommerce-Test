@@ -40,6 +40,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DOCKER_REGISTRYDOCKER_USER,DOCKER_PSW,IMAGE_NAME,TAG_NAME
           script: |
             cd /home/esten/MERN-Ecommerce-Test/
             docker build -f docker/express/Dockerfile --no-cache -t $DOCKER_USER/$IMAGE_NAME:$TAG_NAME .
@@ -58,6 +59,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DOCKER_REGISTRY,DOCKER_USER,DOCKER_PSW
           script: |
             cd /home/esten/MERN-Ecommerce-Test
             docker login $DOCKER_REGISTRY -u $DOCKER_USER -p $DOCKER_PSW             
@@ -65,8 +67,6 @@ jobs:
             docker compose pull 
             docker compose -f docker-compose.prod.yml up -d
         env:
-          USER: ${{ secrets.USER }}
-          HOST: ${{ secrets.HOST }}
           DOCKER_REGISTRY: docker.io
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME}}
           DOCKER_PSW: ${{ secrets.DOCKER_PASSWD}}
