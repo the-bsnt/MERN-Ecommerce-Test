@@ -64,7 +64,7 @@ jobs:
             cd /home/esten/MERN-Ecommerce-Test
             docker login $DOCKER_REGISTRY -u $DOCKER_USER -p $DOCKER_PSW             
             docker compose down
-            docker compose pull 
+            docker compose -f docker-compose.prod.yml pull 
             docker compose -f docker-compose.prod.yml up -d
         env:
           DOCKER_REGISTRY: docker.io
