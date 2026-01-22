@@ -34,20 +34,20 @@ jobs:
           USER: ${{ secrets.USER }}
           HOST: ${{ secrets.HOST }}
 
-      - name: build docker image and push to local registry
+      - name: build docker image and push to dockerhub
         run: |
           ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
             cd /home/esten/MERN-Ecommerce-Test/
-            docker build . -f docker/express/Dockerfile --no-cache -t $DOCKER_REGISTRY/$IMAGE_NAME:$TAG_NAME && \
-            docker login -u $username -p $password $DOCKER_REGISTRY && \
-            docker push $DOCKER_REGISTRY/$IMAGE_NAME:$TAG_NAME
+            docker build -f docker/express/Dockerfile --no-cache -t $username/$IMAGE_NAME:$TAG_NAME .
+            docker login $DOCKER_REGISTRY -u $username -p $password 
+            docker push $username/$IMAGE_NAME:$TAG_NAME
           EOF
         env:
           USER: ${{ secrets.USER }}
           HOST: ${{ secrets.HOST }}
           DOCKER_REGISTRY: docker.io
           IMAGE_NAME: mern-image
-          TAG_NAME: v1
+          TAG_NAME: latest
           username: ${{ secrets.DOCKER_USERNAME}}
           password: ${{ secrets.DOCKER_PASSWD}}
 
@@ -55,7 +55,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
             cd /home/esten/MERN-Ecommerce-Test
-            docker login -u $username -p $password $DOCKER_REGISTRY            
+            docker login $DOCKER_REGISTRY -u $username -p $password             
             docker compose down
             docker compose pull 
             docker compose -f docker-compose.prod.yml up -d
