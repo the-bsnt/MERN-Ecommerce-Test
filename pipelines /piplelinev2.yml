@@ -1,0 +1,86 @@
+name: MERN-Ecommerce Pipline
+
+on:
+  push:
+    branches: ["main"] # The Event: trigger on every push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: setting ssh
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY"> ~/.ssh/private_key
+          chmod 600 ~/.ssh/private_key
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.HOST }}
+
+      - name: build_react
+        run: |
+          ssh -i ~/.ssh/private_key $USER@$HOST << 'EOF'
+            cd /home/esten/MERN-Ecommerce-Test/
+            git pull origin main
+            cd /home/esten/MERN-Ecommerce-Test/client
+            npm ci 
+            npm run build
+            rm -rf /home/esten/build/*
+            cp -r dist/* /home/esten/build/ 
+          EOF
+        env:
+          USER: ${{ secrets.USER }}
+          HOST: ${{ secrets.HOST }}
+
+      - name: Set tag
+        run: echo "TAG_NAME=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Use SSH with TTY Emulation to build docker image and push to dockerhub
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DOCKER_REGISTRY,DOCKER_USER,DOCKER_PSW,IMAGE_NAME,TAG_NAME
+          script: |
+            cd /home/esten/MERN-Ecommerce-Test/
+            docker build -f docker/express/Dockerfile --no-cache -t $DOCKER_USER/$IMAGE_NAME:$TAG_NAME ./server
+            docker tag $DOCKER_USER/$IMAGE_NAME:$TAG_NAME $DOCKER_USER/$IMAGE_NAME:latest
+            echo "$DOCKER_PSW" | docker login $DOCKER_REGISTRY -u $DOCKER_USER --password-stdin 
+            docker push --all-tags $DOCKER_USER/$IMAGE_NAME
+        env:
+          DOCKER_REGISTRY: docker.io
+          IMAGE_NAME: mern-image
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME}}
+          DOCKER_PSW: ${{ secrets.DOCKER_PASSWD}}
+
+      - name: deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DOCKER_REGISTRY,DOCKER_USER,DOCKER_PSW,IMAGE_NAME
+          script: |
+            cd /home/esten/MERN-Ecommerce-Test
+            echo "$DOCKER_PSW" | docker login $DOCKER_REGISTRY -u $DOCKER_USER --password-stdin              
+            docker kill mern-server-container
+            docker rm mern-server-container
+            docker pull $DOCKER_USER/$IMAGE_NAME:latest
+            docker run -d \
+            --name mern-server-container \
+            -p 127.0.0.1:8000:8000 \
+            --env-file ./server/.env \
+            -e NODE_ENV=production \
+            -e PORT=8000 \
+            -v ./server:/server \
+            -v /server/node_modules \
+            $DOCKER_USER/$IMAGE_NAME:latest
+        env:
+          DOCKER_REGISTRY: docker.io
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME}}
+          DOCKER_PSW: ${{ secrets.DOCKER_PASSWD}}
+          IMAGE_NAME: mern-image
