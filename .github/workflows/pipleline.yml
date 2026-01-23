@@ -42,12 +42,14 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.HOST }}
 
-      - name: build react and rsync to server
+      - name: build react and rsync build and code to server
         run: |
           cd client
           npm ci 
           npm run build
           rsync -avz -e "ssh -i ~/.ssh/private_key" dist/ $USER@$HOST:/home/esten/build/
+          cd ..
+          rsync -avz -e "ssh -i ~/.ssh/private_key" . $USER@$HOST:/home/esten/MERN-Ecommerce-Test/
         env:
           USER: ${{ secrets.USER }}
           HOST: ${{ secrets.HOST }}
@@ -68,7 +70,7 @@ jobs:
             docker pull $DOCKER_USER/$IMAGE_NAME:latest
             docker rm -f mern-server-container || true
             cd /home/esten/MERN-Ecommerce-Test/
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d --no-build
         env:
           DOCKER_REGISTRY: docker.io
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME}}
