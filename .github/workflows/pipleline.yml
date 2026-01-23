@@ -78,7 +78,7 @@ jobs:
             # -v ./server:/server \
             # -v /server/node_modules \
             # $DOCKER_USER/$IMAGE_NAME:latest
-            docker compose up -d
+            docker compose -d -f docker-compose.prod.yml up
         env:
           DOCKER_REGISTRY: docker.io
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME}}
