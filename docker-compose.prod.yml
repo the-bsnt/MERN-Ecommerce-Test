@@ -3,6 +3,7 @@ services:
     build:
       context: ./server
       dockerfile: ../docker/express/Dockerfile
+    image: ${DOCKER_USER}/${IMAGE_NAME}:${TAG_NAME}
     container_name: mern-ecommerce-backend
     ports:
       - "127.0.0.1:8000:8000" #ip is included to make port accessible from host only
