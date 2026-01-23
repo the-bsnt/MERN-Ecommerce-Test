@@ -66,8 +66,8 @@ jobs:
           script: |
             echo "$DOCKER_PSW" | docker login $DOCKER_REGISTRY -u $DOCKER_USER --password-stdin
             docker pull $DOCKER_USER/$IMAGE_NAME:latest
-            docker kill mern-server-container
-            docker rm mern-server-container
+            docker rm -f mern-server-container || true
+            cd /home/esten/MERN-Ecommerce-Test/
             docker run -d \
             --name mern-server-container \
             -p 127.0.0.1:8000:8000 \
