@@ -44,12 +44,11 @@ jobs:
 
       - name: build react and rsync build and code to server
         run: |
+          rsync -avz -e "ssh -i ~/.ssh/private_key" . $USER@$HOST:/home/esten/MERN-Ecommerce-Test/
           cd client
           npm ci 
           npm run build
           rsync -avz -e "ssh -i ~/.ssh/private_key" dist/ $USER@$HOST:/home/esten/build/
-          cd ..
-          rsync -avz -e "ssh -i ~/.ssh/private_key" . $USER@$HOST:/home/esten/MERN-Ecommerce-Test/
         env:
           USER: ${{ secrets.USER }}
           HOST: ${{ secrets.HOST }}
